@@ -58,10 +58,8 @@ while true; do
     CHANGED_FILES=$(git diff --name-only HEAD)
     FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l)
 
-    # Form the commit message
-    COMMIT_MSG=$'watcher: detected '"$FILE_COUNT"$' file changes\n\nModified files:\n'"$CHANGED_FILES"
-
-    git commit -m "$COMMIT_MSG"
+    # Form the commit message and commit
+    git commit -m "watcher: detected $FILE_COUNT file changes" -m "Modified files: $CHANGED_FILES"
 
     if git push origin "$BRANCH_NAME"; then
       echo "Changes successfully pushed to $BRANCH_NAME at $(date)"  
