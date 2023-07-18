@@ -9,12 +9,14 @@ SLEEP_TIME=${SLEEP_TIME:-60}
 BRANCH_NAME=${BRANCH_NAME:-main}
 
 # Setup SSH Agent
-mkdir ~/.ssh/
-cp /etc/sshpk/* ~/.ssh/
-chmod 600 ~/.ssh/*
-eval $(ssh-agent) && ssh-add ~/.ssh/sshpk
+mkdir -p /home/watcher/.ssh/
+cp /etc/sshpk/* /home/watcher/.ssh/
+chmod 600 /home/watcher/.ssh/*
+eval $(ssh-agent -s) && ssh-add /home/watcher/.ssh/id_rsa
 
-git clone "$CLONE_URL" .
+git clone "$CLONE_URL" /home/watcher/repo
+
+cd /home/watcher/repo
 
 git checkout "$BRANCH_NAME"
 
@@ -27,6 +29,6 @@ while true; do
     git commit -m "Automated commit: Updated $NUMBER file(s)" -m "$FILES"
     git push origin "$BRANCH_NAME"
   fi
-  
+
   sleep "$SLEEP_TIME"
 done
