@@ -1,34 +1,36 @@
 # Watcher
 
-This project contains a Docker setup to monitor and automatically commit changes to a Git repository.
+This project sets up a Docker container that automatically monitors changes in a directory, and commits and pushes them to a specified Git repository.
+
+## Prerequisites
+
+- Docker installed on your system.
+- SSH key pair for accessing your private Git repository.
 
 ## Description
 
-This Docker image is based on Alpine Linux and contains the necessary scripts to clone a Git repository, monitor changes and automatically commit and push any changes. This is done via polling every 60 seconds to check for changes.
+The Docker image is based on Alpine Linux and contains a shell script that clones the specified Git repository, and periodically (every `SLEEP_TIME` seconds) checks for any changes in the mounted directory. If there are any changes, it stages these changes, commits them with the filenames of the changed files included in the commit message, and pushes them to the specified Git branch (`BRANCH_NAME`).
 
-## Usage 
+The default `SLEEP_TIME` is 60 seconds and can be overridden by setting the `SLEEP_TIME` environment variable at runtime. The default `BRANCH_NAME` is `main` and can also be overridden by setting the `BRANCH_NAME` environment variable at runtime.
 
-1. Pull the Docker image.
-2. Run the Docker container, mounting the directory you want to watch. Specify the Git repo URL as a CLONE_URL environment variable while running the docker container.
+## Usage
 
-```sh
-docker run -d -v /local/dir/to/watch:/home/app -e CLONE_URL='https://github.com/user/repo.git' --name git-auto-commit git-auto-commit
-```
-
-In this example, replace `/local/dir/to/watch` with the path to the directory on your host machine that you want to monitor, and replace `'https://github.com/user/repo.git'` with the URL of your Git repository.
-
-## Note
-
-The script uses Git's differential index functionality to check for changes. If there are changes, it stages, commits, and pushes them to the remote repository. 
-
-Ensure you have the necessary permissions (concerning SSH keys or Access Tokens) in place to commit and push to your selected Git repository.
-
-## Building the Image Locally
-
-If you would like to build this image yourself, you can do so with the following commands:
-
+Build the Docker image:
 ```sh
 docker build -t git-auto-commit .
 ```
 
-This command builds the Docker image and names it "git-auto-commit".
+Run the Docker container:
+```sh
+docker run -d -v /local/directory:/home/app -v /path/to/ssh/key:/etc/sshpk -e CLONE_URL='https://github.com/user/repo.git' -e SLEEP_TIME=120 -e BRANCH_NAME=dev --name git-auto-commit git-auto-commit
+```
+- Replace `/local/directory` with the local directory you wish to watch and commit to your Git repository.
+- Replace `/path/to/ssh/key` with the path to your private SSH key.
+- Replace `https://github.com/user/repo.git` with the URL of your Git repository.
+- Adjust `SLEEP_TIME` and `BRANCH_NAME` as needed.
+
+## Notes
+
+The SSH key is used for authentication with private Git repositories. The key is copied from `/etc/sshpk` (on the Docker container) to the appropriate location and added to the SSH agent.
+
+This solution is secure as long as the private SSH key remains secure.
