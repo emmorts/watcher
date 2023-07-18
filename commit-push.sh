@@ -10,7 +10,7 @@ BRANCH_NAME=${BRANCH_NAME:-main}
 
 # Setup SSH Agent
 mkdir -p /home/watcher/.ssh/ /etc/sshpk/
-echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > /home/watcher/.ssh/config
+echo -e "Host *\n\tStrictHostKeyChecking no\n" > /home/watcher/.ssh/config
 cp /etc/sshpk/* /home/watcher/.ssh/
 chmod 600 /home/watcher/.ssh/*
 eval $(ssh-agent -s) && echo -e "\n" | cat /home/watcher/.ssh/id_rsa - | ssh-add -
