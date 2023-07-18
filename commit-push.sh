@@ -13,7 +13,7 @@ BRANCH_NAME=${BRANCH_NAME:-main}
 mkdir -p /home/watcher/.ssh/ /etc/sshpk/
 cp /etc/sshpk/* /home/watcher/.ssh/
 chmod 600 /home/watcher/.ssh/*
-eval $(ssh-agent -s) && ssh-add /home/watcher/.ssh/id_rsa
+eval $(ssh-agent -s) && echo -e "\n" | cat /home/watcher/.ssh/id_rsa - | ssh-add -
 
 git clone "$CLONE_URL" /home/watcher/repo
 
