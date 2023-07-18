@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk add --no-cache git openssh
+RUN apk add --no-cache git openssh coreutils
 RUN adduser -D watcher
 
 USER watcher
