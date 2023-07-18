@@ -53,12 +53,23 @@ while true; do
 
     # Add, commit and push changes
     git add .
-    git commit -m "Committing at $(date): changes detected."
+    
+    # Get changed files and their count
+    CHANGED_FILES=$(git diff --name-only HEAD)
+    FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l)
+
+    # Form the commit message
+    COMMIT_MSG="watcher: detected $FILE_COUNT file changes\n\nModified files: $CHANGED_FILES"
+
+    git commit -m "$COMMIT_MSG"
 
     if git push origin "$BRANCH_NAME"; then
       echo "Changes successfully pushed to $BRANCH_NAME at $(date)"  
     else
       echo "Error: Failed to push changes to $BRANCH_NAME at $(date)"
+
+      echo "Performing hard reset..."
+      git fetch origin $BRANCH_NAME && git reset --hard origin/$BRANCH_NAME
     fi
   else
     echo "No changes detected between /mnt/blog and /home/watcher/repo/blog."
@@ -66,7 +77,7 @@ while true; do
   
   echo "Pulling latest changes from $BRANCH_NAME..."
   git pull origin "$BRANCH_NAME"
-  
+
   echo "Next check in $SLEEP_TIME seconds at $(date --date='now + '$SLEEP_TIME' seconds')."
   sleep "$SLEEP_TIME"
 done
