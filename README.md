@@ -2,11 +2,6 @@
 
 This project sets up a Docker container that automatically monitors changes in a directory, and commits and pushes them to a specified Git repository.
 
-## Prerequisites
-
-- Docker installed on your system.
-- SSH key pair for accessing your private Git repository.
-
 ## Description
 
 The Docker image is based on Alpine Linux and contains a shell script that clones the specified Git repository, and periodically (every `SLEEP_TIME` seconds) checks for any changes in the mounted directory. If there are any changes, it stages these changes, commits them with the filenames of the changed files included in the commit message, and pushes them to the specified Git branch (`BRANCH_NAME`).
