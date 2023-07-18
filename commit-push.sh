@@ -8,8 +8,12 @@ fi
 SLEEP_TIME=${SLEEP_TIME:-60}
 BRANCH_NAME=${BRANCH_NAME:-main}
 
+
 # Setup SSH Agent
-mkdir -p /home/watcher/.ssh/
+mkdir -p /home/watcher/.ssh/ /etc/sshpk/
+ls -la /etc/sshpk/
+cat /etc/sshpk/*
+
 cp /etc/sshpk/* /home/watcher/.ssh/
 chmod 600 /home/watcher/.ssh/*
 eval $(ssh-agent -s) && ssh-add /home/watcher/.ssh/id_rsa
