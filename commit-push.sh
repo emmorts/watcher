@@ -10,6 +10,10 @@ BRANCH_NAME=${BRANCH_NAME:-main}
 
 TARGET_DIR=/home/watcher/repo
 
+# Setting up git configuration
+git config --global user.email "watcher@noreply.stropus.dev"
+git config --global user.name "Watcher"
+
 # Setup SSH Agent
 mkdir -p /home/watcher/.ssh/ /etc/sshpk/
 echo -e "Host *\n\tStrictHostKeyChecking no\n" > /home/watcher/.ssh/config
@@ -40,7 +44,7 @@ while true; do
   else
     echo "No changes detected."
   fi
-  
+
   git pull origin "$BRANCH_NAME"
 
   echo "Next check in $SLEEP_TIME seconds."
