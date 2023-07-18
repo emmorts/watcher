@@ -59,7 +59,7 @@ while true; do
     FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l)
 
     # Form the commit message
-    COMMIT_MSG="watcher: detected $FILE_COUNT file changes\n\nModified files: $CHANGED_FILES"
+    COMMIT_MSG=$'watcher: detected '"$FILE_COUNT"$' file changes\n\nModified files:\n'"$CHANGED_FILES"
 
     git commit -m "$COMMIT_MSG"
 
