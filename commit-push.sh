@@ -24,24 +24,25 @@ cd $TARGET_DIR
 git checkout "$BRANCH_NAME"
 
 while true; do
-  FILES=$(git diff --name-only)
-  NUMBER=$(git diff --name-only | wc -l)
-
-  if [ "$NUMBER" -ne "0" ]; then
-    echo "Changes detected in the following $NUMBER files:"
-    echo "$FILES"
+  if ! diff -qr /mnt/blog /home/watcher/repo/blog; then
+    echo "Differences detected, updating the repository..."
+    
+    cp -R /mnt/blog/* /home/watcher/repo/blog/
 
     git add .
-    git commit -m "Automated commit: Updated $NUMBER file(s)" -m "$FILES"
-    git push origin "$BRANCH_NAME"
+    git commit -m "Committing at $(date): changes detected."
 
-    echo "Changes pushed to $BRANCH_NAME at $(date)"
+    if git push origin "$BRANCH_NAME"; then
+      echo "Changes pushed to $BRANCH_NAME at $(date)"  
+    else
+      echo "Error: Failed to push changes to $BRANCH_NAME at $(date)"
+    fi
   else
     echo "No changes detected."
   fi
-
+  
   git pull origin "$BRANCH_NAME"
 
-  echo "Next iteration in $SLEEP_TIME seconds."
+  echo "Next check in $SLEEP_TIME seconds."
   sleep "$SLEEP_TIME"
 done
