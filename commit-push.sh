@@ -74,7 +74,7 @@ while true; do
   fi
   
   echo "Pulling latest changes from $BRANCH_NAME..."
-  git pull origin "$BRANCH_NAME"
+  git pull -q origin "$BRANCH_NAME"
 
   echo "Next check in $SLEEP_TIME seconds at $(date --date='now + '$SLEEP_TIME' seconds')."
   sleep "$SLEEP_TIME"
