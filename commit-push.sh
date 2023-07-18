@@ -8,6 +8,8 @@ fi
 SLEEP_TIME=${SLEEP_TIME:-60}
 BRANCH_NAME=${BRANCH_NAME:-main}
 
+TARGET_DIR=/home/watcher/repo
+
 # Setup SSH Agent
 mkdir -p /home/watcher/.ssh/ /etc/sshpk/
 echo -e "Host *\n\tStrictHostKeyChecking no\n" > /home/watcher/.ssh/config
@@ -15,9 +17,9 @@ cp /etc/sshpk/* /home/watcher/.ssh/
 chmod 600 /home/watcher/.ssh/*
 eval $(ssh-agent -s) && echo -e "\n" | cat /home/watcher/.ssh/id_rsa - | ssh-add -
 
-git clone "$CLONE_URL" /home/watcher/repo
+git -C "$TARGET_DIR" pull || git clone "$CLONE_URL" "$TARGET_DIR"
 
-cd /home/watcher/repo
+cd $TARGET_DIR
 
 git checkout "$BRANCH_NAME"
 
