@@ -17,7 +17,7 @@ cp /etc/sshpk/* /home/watcher/.ssh/
 chmod 600 /home/watcher/.ssh/*
 eval $(ssh-agent -s) && echo -e "\n" | cat /home/watcher/.ssh/id_rsa - | ssh-add -
 
-git -C "$TARGET_DIR" pull || git clone "$CLONE_URL" "$TARGET_DIR"
+git -C "$TARGET_DIR" pull origin $BRANCH_NAME || git clone "$CLONE_URL" "$TARGET_DIR"
 
 cd $TARGET_DIR
 
