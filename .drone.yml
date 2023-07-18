@@ -1,0 +1,23 @@
+kind: pipeline
+type: docker
+name: deploy
+
+steps:
+  - name: build and publish
+    image: plugins/docker
+    settings:
+      mtu: 1450
+      registry: git.stropus.dev
+      username:
+        from_secret: GITEA_USER
+      password:
+        from_secret: GITEA_TOKEN
+      repo: git.stropus.dev/tomas/watcher
+      tags: latest
+      dockerfile: ./Dockerfile
+      cache_from: "git.stropus.dev/tomas/watcher:latest"
+
+trigger:
+  branch:
+    include:
+      - main
