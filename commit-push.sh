@@ -26,10 +26,20 @@ while true; do
   NUMBER=$(git diff --name-only | wc -l)
 
   if [ "$NUMBER" -ne "0" ]; then
+    echo "Changes detected in the following $NUMBER files:"
+    echo "$FILES"
+
     git add .
     git commit -m "Automated commit: Updated $NUMBER file(s)" -m "$FILES"
     git push origin "$BRANCH_NAME"
+
+    echo "Changes pushed to $BRANCH_NAME at $(date)"
+  else
+    echo "No changes detected."
   fi
 
+  git pull origin "$BRANCH_NAME"
+
+  echo "Next iteration in $SLEEP_TIME seconds."
   sleep "$SLEEP_TIME"
 done
