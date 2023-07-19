@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Check environment variable
+# Wrapper functions
 checkEnvironmentVariable() {
   if [ -z "$1" ]; then
     echo "Error: $2 environment variable is not defined."
@@ -8,40 +8,6 @@ checkEnvironmentVariable() {
   fi
 }
 
-# Check environment variables
-checkEnvironmentVariable "$CLONE_URL" "CLONE_URL"
-checkEnvironmentVariable "$SOURCE_PATHS" "SOURCE_PATHS"
-checkEnvironmentVariable "$TARGET_PATHS" "TARGET_PATHS"
-
-# Convert the comma-separated strings into arrays
-IFS=',' read -r -a source_paths <<< "$SOURCE_PATHS"
-IFS=',' read -r -a target_paths <<< "$TARGET_PATHS"
-
-# Check both arrays have the same number of elements
-if [ "${#source_paths[@]}" -ne "${#target_paths[@]}" ]; then
-  echo "Error: SOURCE_PATHS and TARGET_PATHS should have the same number of elements."
-  exit 1
-fi
-
-# Set variables
-SLEEP_TIME=${SLEEP_TIME:-60}
-BRANCH_NAME=${BRANCH_NAME:-main}
-GIT_AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-watcher@noreply.localhost}
-GIT_AUTHOR_NAME=${GIT_AUTHOR_NAME:-Watcher}
-TARGET_DIR=/home/watcher/repo
-
-echo "Starting script..."
-
-# Initialize
-setupGitConfigs
-setupSshAgent
-cloneOrPullRepository
-checkoutBranch
-
-# Start monitoring
-monitorDirectories
-
-# Wrapper functions
 setupGitConfigs() {
   echo "Setting up git configuration..."
   git config --global user.email "$GIT_AUTHOR_EMAIL"
@@ -135,3 +101,36 @@ sleepUntilNextCheck() {
   echo "Next check in $SLEEP_TIME seconds at $(date --date='now + '$SLEEP_TIME' seconds')."
   sleep "$SLEEP_TIME"
 }
+
+# Check environment variables
+checkEnvironmentVariable "$CLONE_URL" "CLONE_URL"
+checkEnvironmentVariable "$SOURCE_PATHS" "SOURCE_PATHS"
+checkEnvironmentVariable "$TARGET_PATHS" "TARGET_PATHS"
+
+# Convert the comma-separated strings into arrays
+IFS=',' read -r -a source_paths <<< "$SOURCE_PATHS"
+IFS=',' read -r -a target_paths <<< "$TARGET_PATHS"
+
+# Check both arrays have the same number of elements
+if [ "${#source_paths[@]}" -ne "${#target_paths[@]}" ]; then
+  echo "Error: SOURCE_PATHS and TARGET_PATHS should have the same number of elements."
+  exit 1
+fi
+
+# Set variables
+SLEEP_TIME=${SLEEP_TIME:-60}
+BRANCH_NAME=${BRANCH_NAME:-main}
+GIT_AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-watcher@noreply.localhost}
+GIT_AUTHOR_NAME=${GIT_AUTHOR_NAME:-Watcher}
+TARGET_DIR=/home/watcher/repo
+
+echo "Starting script..."
+
+# Initialize
+setupGitConfigs
+setupSshAgent
+cloneOrPullRepository
+checkoutBranch
+
+# Start monitoring
+monitorDirectories
