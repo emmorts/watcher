@@ -31,7 +31,16 @@ The directories to be watched are provided via environment variables. Make sure 
 - **SOURCE_PATHS**: Comma-separated list of absolute paths to source directories. For example: `/mnt/blog,/mnt/docs`.
 - **TARGET_PATHS**: Comma-separated list of relative paths to target directories. For example: `blog,docs`.
 - **SLEEP_TIME**: Time in seconds between successive checks for changes. Default is 60 seconds.
-- **BRANCH_NAME**: The branch to which changes should be pushed. Default is 'main'.
+- **BRANCH_NAME**: The branch to which changes should be pushed. Default is `main`.
+- **SSH_KEY_NAME**: (Optional) The name of your private SSH key to be used. The default is `id_rsa`. 
+
+If you are using SSH for Git, it is assumed that a directory named `/etc/sshpk` is mounted from the host into the Docker container, containing a private key named according to the `SSH_KEY_NAME` environment variable.
+
+If you are not providing an SSH Key, the script will try to pull the Git repository using HTTP(S). Please ensure to include your username and password or personal access token in the `CLONE_URL` in the format: 
+```
+https://username:password@github.com/username/repository.git
+```
+Please be aware that including credentials in plaintext can have security implications. 
 
 To start the directory watcher, run:
 
@@ -42,11 +51,15 @@ docker run -d \
   -e TARGET_PATHS=<target-paths> \
   -e BRANCH_NAME=<branch-name> \
   -e SLEEP_TIME=<sleep-time> \
-  -v /mnt:/mnt \
+  -e SSH_KEY_NAME=<ssh-key-name> \
+  -v ./my_dir/one:/mnt/one \
+  -v ./my_dir/two:/mnt/two \
+  -v ./my_dir/three:/mnt/three \
+  -v /etc/sshpk:/etc/sshpk \
   watcher
 ```
 
-Replace `<clone-url>`, `<source-paths>`, `<target-paths>`, `<branch-name>`, `<sleep-time>` with your values. The `-v /mnt:/mnt` argument should be adjusted according to where you have the directories you want to watch on your host machine. The left hand side is the host directory and the right hand side is the corresponding directory in the docker container.
+Replace values within the angle brackets with your values. The `-v /mnt:/mnt` argument should be adjusted according to where you have the directories you want to watch on your host machine. The left hand side is the host directory and the right hand side is the corresponding directory in the docker container.
 
 ## Contributing
 

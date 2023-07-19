@@ -22,8 +22,10 @@ setupSshAgent() {
   cp /etc/sshpk/* /home/watcher/.ssh/
   chmod 600 /home/watcher/.ssh/*
 
-  echo "Starting the SSH agent..."
-  eval $(ssh-agent -s) && echo -e "\n" | cat /home/watcher/.ssh/id_rsa - | ssh-add -
+  if [[ -f "$SSH_KEY_PATH" ]]; then
+    echo "Starting the SSH agent..."
+    eval $(ssh-agent -s) && echo -e "\n" | cat $SSH_KEY_PATH - | ssh-add -
+  fi
 }
 
 cloneOrPullRepository() {
@@ -133,6 +135,8 @@ SLEEP_TIME=${SLEEP_TIME:-60}
 BRANCH_NAME=${BRANCH_NAME:-main}
 GIT_AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-watcher@noreply.localhost}
 GIT_AUTHOR_NAME=${GIT_AUTHOR_NAME:-Watcher}
+SSH_KEY_NAME=${SSH_KEY_NAME:-id_rsa}
+SSH_KEY_PATH="/etc/sshpk/$SSH_KEY_NAME"
 TARGET_DIR=/home/watcher/repo
 
 echo "Starting script..."
