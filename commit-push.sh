@@ -28,7 +28,18 @@ setupSshAgent() {
 
 cloneOrPullRepository() {
   echo "Pulling or cloning the repository..."
-  git -C "$TARGET_DIR" pull origin $BRANCH_NAME || git clone "$CLONE_URL" "$TARGET_DIR"
+  
+  mkdir -p "$TARGET_DIR"
+
+  if [ -d "$TARGET_DIR" ] && [ -z "$(ls -A $TARGET_DIR)" ]; then
+    # If directory exists and is empty, do a git clone
+    git clone "$CLONE_URL" "$TARGET_DIR"
+  elif [ -d "$TARGET_DIR" ] && [ "$(ls -A $TARGET_DIR)" ]; then
+    # If directory exists and is not empty, do a git pull
+    git -C "$TARGET_DIR" pull origin $BRANCH_NAME
+  else
+    echo "Error: A problem occurred with the target directory $TARGET_DIR"
+  fi
 }
 
 checkoutBranch() {
