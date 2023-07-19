@@ -1,31 +1,57 @@
 # Watcher
 
-This project sets up a Docker container that automatically monitors changes in a directory, and commits and pushes them to a specified Git repository.
+This script pulls a configured Git repository and monitors a set of directories, compare them with directories inside the repository. If changes are detected, it commits and pushes the changes. This can be useful for keeping files in sync on multiple instances, or for automatically tracking and versioning changes.
 
-## Description
+## Requirements
 
-The Docker image is based on Alpine Linux and contains a shell script that clones the specified Git repository, and periodically (every `SLEEP_TIME` seconds) checks for any changes in the mounted directory. If there are any changes, it stages these changes, commits them with the filenames of the changed files included in the commit message, and pushes them to the specified Git branch (`BRANCH_NAME`).
+- Docker
 
-The default `SLEEP_TIME` is 60 seconds and can be overridden by setting the `SLEEP_TIME` environment variable at runtime. The default `BRANCH_NAME` is `main` and can also be overridden by setting the `BRANCH_NAME` environment variable at runtime.
+## Setup
+
+1. Ensure your Docker environment is up and running.
+
+2. Clone this repository and navigate to it:
+
+   ```
+   git clone https://git.stropus.dev/tomas/watcher.git
+   cd watcher
+   ```
+
+3. Build the Docker image:
+
+   ```
+   docker build -t watcher .
+   ```
 
 ## Usage
 
-Build the Docker image:
-```sh
-docker build -t git-auto-commit .
+The directories to be watched are provided via environment variables. Make sure you set correctly the environment variables before running the script:
+
+- **CLONE_URL**: This is the URL of the Git repository to clone and sync with the local directories.
+- **SOURCE_PATHS**: Comma-separated list of absolute paths to source directories. For example: `/mnt/blog,/mnt/docs`.
+- **TARGET_PATHS**: Comma-separated list of relative paths to target directories. For example: `blog,docs`.
+- **SLEEP_TIME**: Time in seconds between successive checks for changes. Default is 60 seconds.
+- **BRANCH_NAME**: The branch to which changes should be pushed. Default is 'main'.
+
+To start the directory watcher, run:
+
+```
+docker run -d \
+  -e CLONE_URL=<clone-url> \
+  -e SOURCE_PATHS=<source-paths> \
+  -e TARGET_PATHS=<target-paths> \
+  -e BRANCH_NAME=<branch-name> \
+  -e SLEEP_TIME=<sleep-time> \
+  -v /mnt:/mnt \
+  watcher
 ```
 
-Run the Docker container:
-```sh
-docker run -d -v /local/directory:/home/app -v /path/to/ssh/key:/etc/sshpk -e CLONE_URL='https://github.com/user/repo.git' -e SLEEP_TIME=120 -e BRANCH_NAME=dev --name git-auto-commit git-auto-commit
-```
-- Replace `/local/directory` with the local directory you wish to watch and commit to your Git repository.
-- Replace `/path/to/ssh/key` with the path to your private SSH key.
-- Replace `https://github.com/user/repo.git` with the URL of your Git repository.
-- Adjust `SLEEP_TIME` and `BRANCH_NAME` as needed.
+Replace `<clone-url>`, `<source-paths>`, `<target-paths>`, `<branch-name>`, `<sleep-time>` with your values. The `-v /mnt:/mnt` argument should be adjusted according to where you have the directories you want to watch on your host machine. The left hand side is the host directory and the right hand side is the corresponding directory in the docker container.
 
-## Notes
+## Contributing
 
-The SSH key is used for authentication with private Git repositories. The key is copied from `/etc/sshpk` (on the Docker container) to the appropriate location and added to the SSH agent.
+Contributions to improve this script are welcome. Please feel free to open a PR or issue in the repository.
 
-This solution is secure as long as the private SSH key remains secure.
+## License
+
+This project is released under the MIT License. See the file LICENSE for more details.
