@@ -12,8 +12,8 @@ checkEnvironmentVariable "$SOURCE_PATHS" "SOURCE_PATHS"
 checkEnvironmentVariable "$TARGET_PATHS" "TARGET_PATHS"
 
 # Convert the comma-separated strings into arrays
-IFS=',' read -r -a source_paths <<< "$SOURCE_PATHS"
-IFS=',' read -r -a target_paths <<< "$TARGET_PATHS"
+IFS=',' read -r -a source_paths < <(printf "%s" "$SOURCE_PATHS")
+IFS=',' read -r -a target_paths < <(printf "%s" "$TARGET_PATHS")
 
 # Check both arrays have the same number of elements
 if [ "${#source_paths[@]}" -ne "${#target_paths[@]}" ]; then
