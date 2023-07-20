@@ -36,11 +36,19 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tag-with-ref: true
+          tag-with-sha: true
+
+      - name: Setup additional Docker tag for main branch
+        if: github.ref == 'refs/heads/main'
+        run: echo "DOCKER_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ env.DOCKER_TAG }}
           labels: ${{ steps.meta.outputs.labels }}

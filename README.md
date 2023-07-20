@@ -27,9 +27,42 @@ https://username:password@github.com/username/repository.git
 ```
 Please be aware that including credentials in plaintext can have security implications. 
 
-To start the directory watcher, run:
+### Running with Docker Compose
+
+In case you prefer using Docker Compose, here is a sample docker-compose.yml configuration:
+
+```yaml
+version: '3'
+services:
+  watcher:
+    image: ghcr.io/emmorts/watcher:main
+    volumes:
+      - ./my_dir/one:/mnt/one
+      - ./my_dir/two:/mnt/two
+      - ./my_dir/three:/mnt/three
+      - ~/.ssh/id_rsa:/etc/sshpk/id_rsa:ro
+    environment:
+      - CLONE_URL=<clone-url>
+      - SOURCE_PATHS=<source-paths>
+      - TARGET_PATHS=<target-paths>
+      - BRANCH_NAME=<branch-name>
+      - SLEEP_TIME=<sleep-time>
+      - SSH_KEY_NAME=<ssh-key-name>
+```
+
+Be aware that the value on the left of each volume entry corresponds to the host directory, and the value on the right corresponds to the respective directory in the Docker container.
+
+To start the services, run:
 
 ```
+docker-compose up -d
+```
+
+### Running with Docker
+
+To start the directory watcher using Docker command-line interface, run:
+
+```sh
 docker run -d \
   -e CLONE_URL=<clone-url> \
   -e SOURCE_PATHS=<source-paths> \
@@ -40,11 +73,40 @@ docker run -d \
   -v ./my_dir/one:/mnt/one \
   -v ./my_dir/two:/mnt/two \
   -v ./my_dir/three:/mnt/three \
-  -v /etc/sshpk:/etc/sshpk \
-  watcher
+  -v ~/.ssh/id_rsa:/etc/sshpk/id_rsa \
+  ghcr.io/emmorts/watcher:main
 ```
 
-Replace values within the angle brackets with your values. The `-v /mnt:/mnt` argument should be adjusted according to where you have the directories you want to watch on your host machine. The left hand side is the host directory and the right hand side is the corresponding directory in the docker container.
+## Example
+
+Let's take the example of a repository hosted on GitHub which you want to keep in sync with three local directories.
+
+### Sample Repository
+
+Consider a repository stored at `https://github.com/gatsby/my_repository.git` on the `main` branch. This repository contains the directories `dir1`, `dir2`, and `dir3`.
+
+### Local Directories
+
+Your source directories on your local machine are `/home/gatsby/dir1`, `/home/gatsby/dir2`, `/home/gatsby/dir3` respectively. These directories contain files that frequently change and you want to automatically back up changes to your GitHub repository.
+
+### Running the Project
+
+To enable synchronization of these directories, update the environment variables in the Docker Compose or Docker command as follows:
+
+```
+  CLONE_URL: https://github.com/gatsby/my_repository.git
+  SOURCE_PATHS: /home/gatsby/dir1,/home/gatsby/dir2,/home/gatsby/dir3
+  TARGET_PATHS: dir1,dir2,dir3
+  BRANCH_NAME: main
+  SLEEP_TIME: 60
+  SSH_KEY_NAME: [If Applicable]
+```
+
+You can choose to use Docker Compose or Docker commands to run the project.
+
+After successfully running the Docker container, the `watcher` script will start monitoring the local directories for any changes. If a change is detected, it will commit and push the changes back to the defined target paths in the repository.
+
+This will keep your local directories and GitHub repository in sync, ensuring regular and efficient backup of your crucial data.
 
 ## Contributing
 
