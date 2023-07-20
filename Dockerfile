@@ -5,7 +5,7 @@ RUN adduser -D watcher
 
 USER watcher
 WORKDIR /home/watcher/
-COPY --chown=watcher commit-push.sh .
-RUN chmod +x commit-push.sh
+COPY --chown=watcher watcher.sh .
+RUN chmod +x watcher.sh
 
-CMD ["bash", "commit-push.sh"]
+CMD ["bash", "watcher.sh"]

@@ -135,8 +135,7 @@ SLEEP_TIME=${SLEEP_TIME:-60}
 BRANCH_NAME=${BRANCH_NAME:-main}
 GIT_AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-watcher@noreply.localhost}
 GIT_AUTHOR_NAME=${GIT_AUTHOR_NAME:-Watcher}
-SSH_KEY_NAME=${SSH_KEY_NAME:-id_rsa}
-SSH_KEY_PATH="/etc/sshpk/$SSH_KEY_NAME"
+SSH_KEY_PATH=${SSH_KEY_PATH:-/etc/sshpk/id_rsa}
 TARGET_DIR=/home/watcher/repo
 
 echo "Starting script..."
