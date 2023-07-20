@@ -1,5 +1,3 @@
-Below is the updated README.md for the project called `watcher`:
-
 # Watcher
 
 This repository contains a Dockerized script to monitor changes in specified directories and automatically commit and push those changes to a git repository.
@@ -13,6 +11,7 @@ The script is packaged into a Docker image for portability. It can be configured
 ## Table of Contents
 - [Usage](#usage)
 - [Configuration](#configuration)
+- [Usage](#usage)
   - [Running directly](#running-directly)
   - [Running with Docker Compose](#running-with-docker-compose)
   - [Running with Docker](#running-with-docker)
@@ -24,29 +23,31 @@ The script is packaged into a Docker image for portability. It can be configured
 
 Configuration of the `watcher` is done through environment variables. Here are the variables you can set:
 
-| Variable        | Description                                                                                                                  | Default Value | Required |
-|-----------------|------------------------------------------------------------------------------------------------------------------------------|---------------|----------|
-| `CLONE_URL`     | The URL of the Git repository you want to sync changes to.                                                                  | N/A           | Yes      |
-| `SOURCE_PATHS`  | A comma-separated list of absolute paths to the source directories on the host machine or remote instance.                     | N/A           | Yes      |
-| `TARGET_PATHS`  | A comma-separated list of paths to the target directories in the `CLONE_URL` repository. These paths are relative to the repository root.  | N/A       | Yes      |
-| `BRANCH_NAME`   | The name of the branch in the `CLONE_URL` repository that the changes will be pushed to.                                         | `main`           | No      |
-| `SLEEP_TIME`    | The time (in seconds) before each check for changes.                                                                         | `60`          | No       |
-| `SSH_KEY_PATH`  | If using SSH for Git operations, specify the path to the SSH private key file. Should be set to `/etc/sshpk/id_rsa` or `/root/.ssh/id_rsa` whichever is in use.   | Not-set       | No       |
+| Variable       | Description                                                                                                                               | Default Value       | Required          |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ----------------- |
+| `CLONE_URL`    | The URL of the Git repository you want to sync changes to.                                                                                | N/A                 | Yes               |
+| `SOURCE_PATHS` | A comma-separated list of absolute paths to the source directories on the host machine or remote instance.                                | N/A                 | Yes               |
+| `TARGET_PATHS` | A comma-separated list of paths to the target directories in the `CLONE_URL` repository. These paths are relative to the repository root. | N/A                 | Yes               |
+| `BRANCH_NAME`  | The name of the branch in the `CLONE_URL` repository that the changes will be pushed to.                                                  | `main`              | No                |
+| `SLEEP_TIME`   | The time (in seconds) before each check for changes.                                                                                      | `60`                | No                |
+| `SSH_KEY_PATH` | If using SSH for Git operations, specify the path to the SSH private key file.                                                            | `/etc/sshpk/id_rsa` | Only if using SSH |
 
 
 Example of configuration variables setup: 
 
-```sh
-  -e CLONE_URL=https://github.com/my_repository.git \
-  -e SOURCE_PATHS=/home/myapp/logs,/var/logs/nginx \
-  -e TARGET_PATHS=logs,nginx_logs \
-  -e BRANCH_NAME=main \
-  -e SLEEP_TIME=300 \
-  -e SSH_KEY_PATH=/root/.ssh/id_rsa \
+```env
+  CLONE_URL=https://github.com/my_repository.git \
+  SOURCE_PATHS=/home/myapp/logs,/var/logs/nginx \
+  TARGET_PATHS=logs,nginx_logs \
+  BRANCH_NAME=main \
+  SLEEP_TIME=300 \
+  SSH_KEY_PATH=/home/foo/.ssh/id_rsa \
 ```
 Remember to replace these values with your specific setup. Ensure your `SOURCE_PATHS` and `TARGET_PATHS` align vertically i.e., each source path is synced to the corresponding target path based on their order in the comma-separated list. For example, in the above case, `/home/myapp/logs` is synced with `logs` in the repository root, and `/var/logs/nginx` is synced with `nginx_logs` in the repository root.
 
 ## Usage
+
+It is recommended to run the script in a Docker container, as it is much easier to manage its' configuration.
 
 ### Running directly
 
@@ -122,23 +123,23 @@ Let's take the example of a repository hosted on GitHub which you want to keep i
 
 ### Sample Repository
 
-Consider a repository stored at `https://github.com/gatsby/my_repository.git` on the `main` branch. This repository contains the directories `blog`, `docs`, and `.config`.
+Consider a repository stored at `https://github.com/example/important-repo.git` on the `main` branch. This repository contains the directories `blog`, `docs`, and `.config`.
 
 ### Local Directories
 
-Your source directories on your local machine are `/home/gatsby/blog`, `/home/gatsby/data/docs`, `/home/gatsby/.config` respectively. These directories contain files that frequently change and you want to automatically back up changes to your GitHub repository.
+Your source directories on your local machine are `/home/example/blog`, `/home/example/data/docs`, `/home/example/.config` respectively. These directories contain files that frequently change and you want to automatically back up changes to your GitHub repository.
 
 ### Running the Project
 
-To enable synchronization of these directories, update the environment variables in the Docker Compose or Docker command as follows:
+To enable synchronization of these directories, update the environment variables in either in your system, Docker Compose or Docker command as follows:
 
-```
-  CLONE_URL: https://github.com/gatsby/my_repository.git
-  SOURCE_PATHS: /home/gatsby/blog,/home/gatsby/data/docs,/home/gatsby/.config
-  TARGET_PATHS: blog,docs,.config
-  BRANCH_NAME: main
-  SLEEP_TIME: 60
-  SSH_KEY_PATH: [If Applicable]
+```sh
+  CLONE_URL=git@github.com:example/important-repo.git # Using SSH
+  SOURCE_PATHS=/home/example/blog,/home/example/data/docs,/home/example/.config
+  TARGET_PATHS=blog,docs,.config
+  BRANCH_NAME=main
+  SLEEP_TIME=60
+  SSH_KEY_PATH=/home/example/.ssh/id_rsa
 ```
 
 You can choose to use Docker Compose or Docker command-line interface to run the project. Refer to the [Usage](#usage) section for instructions on how to run the script.

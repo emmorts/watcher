@@ -36,8 +36,6 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tag-with-ref: true
-          tag-with-sha: true
 
       - name: Setup additional Docker tag for main branch
         if: github.ref == 'refs/heads/main'
