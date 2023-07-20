@@ -1,27 +1,12 @@
 # Watcher
 
-This script pulls a configured Git repository and monitors a set of directories, compare them with directories inside the repository. If changes are detected, it commits and pushes the changes. This can be useful for keeping files in sync on multiple instances, or for automatically tracking and versioning changes.
+This repository contains a Dockerized script to monitor changes in specified directories and automatically commit and push those changes to a git repository.
 
-## Requirements
+The script pulls down a repository specified by `CLONE_URL` and watches the directories listed in `SOURCE_PATHS`. It periodically checks if those directories differ from the corresponding ones in `TARGET_PATHS` inside the cloned repo. Any differences found are committed and pushed to the repo.
 
-- Docker
+This allows keeping the repository repository in sync with changes to files/directories on the host machine or on remote instances. It can be useful for centralized logging, version control and backup of important data.
 
-## Setup
-
-1. Ensure your Docker environment is up and running.
-
-2. Clone this repository and navigate to it:
-
-   ```
-   git clone https://git.stropus.dev/tomas/watcher.git
-   cd watcher
-   ```
-
-3. Build the Docker image:
-
-   ```
-   docker build -t watcher .
-   ```
+The script is packaged into a Docker image for portability. It can be configured via environment variables passed into docker run. SSH keys can be mounted into the container to enable pushing over SSH.
 
 ## Usage
 
