@@ -12,10 +12,10 @@ steps:
         from_secret: GITEA_USER
       password:
         from_secret: GITEA_TOKEN
-      repo: git.stropus.dev/tomas/watcher
+      repo: git.stropus.dev/dev/watcher
       tags: latest
       dockerfile: ./Dockerfile
-      cache_from: "git.stropus.dev/tomas/watcher:latest"
+      cache_from: "git.stropus.dev/dev/watcher:latest"
 
 trigger:
   branch:
